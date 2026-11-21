@@ -34,7 +34,7 @@ button{cursor:pointer;border:0;background:none}
 h1,h2,h3,.disp{font-family:Unbounded,Manrope,sans-serif;font-weight:700;letter-spacing:-.01em;margin:0}
 header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:8px 0 18px}
 .date-big{font-size:28px;line-height:1.05}
-.date-sub{color:var(--muted);font-size:14px;margin-top:6px;text-transform:capitalize}
+.date-sub{color:var(--muted);font-size:14px;margin-top:6px}
 .ring{width:64px;height:64px;flex:none;position:relative}
 .ring svg{transform:rotate(-90deg)}
 .ring b{position:absolute;inset:0;display:grid;place-items:center;font-family:Unbounded;font-size:15px}
@@ -83,8 +83,8 @@ nav.tabs button.on svg{color:var(--accent)}
 /* sheet */
 .scrim{position:fixed;inset:0;background:rgba(20,26,22,.45);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s}
 .scrim.on{opacity:1;pointer-events:auto}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
-.sheet.on{transform:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;transform:translateY(105%);visibility:hidden;transition:transform .3s cubic-bezier(.2,.8,.2,1),visibility 0s .3s}
+.sheet.on{transform:none;visibility:visible;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
 .sheet .in{max-width:480px;margin:0 auto;background:var(--paper);border-radius:24px 24px 0 0;padding:10px 18px calc(18px + var(--safe-b));max-height:92dvh;overflow:auto}
 .grab{width:42px;height:5px;border-radius:5px;background:var(--line);margin:0 auto 14px}
 .field{margin-bottom:16px}
@@ -313,7 +313,7 @@ function renderToday(){
   const {show, doneToday, overIds, queue} = buildToday();
   const now = new Date();
   const total = show.length + doneToday.length;
-  let h = `<header class="top"><div><div class="date-big disp">${now.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</div><div class="date-sub">${now.toLocaleDateString('ru-RU',{weekday:'long'})} · план на день</div></div>${ring(doneToday.length, total)}</header>`;
+  let h = `<header class="top"><div><div class="date-big disp">${now.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</div><div class="date-sub">${(w=>w[0].toUpperCase()+w.slice(1))(now.toLocaleDateString('ru-RU',{weekday:'long'}))} · план на день</div></div>${ring(doneToday.length, total)}</header>`;
   if (!S.tasks.length){
     h += `<div class="empty"><div style="font-size:34px">✍️</div><div class="disp">Задач пока нет</div><p>Нажмите «+», выберите куда, скажите задачу голосом и поставьте срок. Каждый день здесь будут до ${LIMIT} самых важных.</p></div>`;
   } else if (!show.length){
@@ -333,7 +333,7 @@ function renderAll(){
   const active = S.tasks.filter(k => !k.doneAt).sort(byUrgency);
   const list = allFilter === 'all' ? active : active.filter(k => k.cat === allFilter);
   const ids = new Set(S.plan.ids);
-  let h = `<header class="top"><div><div class="date-big disp">Очередь</div><div class="date-sub">все задачи по срочности</div></div></header>`;
+  let h = `<header class="top"><div><div class="date-big disp">Очередь</div><div class="date-sub">Все задачи по срочности</div></div></header>`;
   h += `<div class="filter">${[['all','Все'],...Object.entries(CATS).map(([k,v])=>[k,v.name])].map(([k,n])=>`<button data-filter="${k}" class="${allFilter===k?'on':''}">${n}</button>`).join('')}</div>`;
   if (!list.length) h += `<div class="empty" style="margin-top:12px"><div class="disp">Пусто</div><p>Здесь появятся все активные задачи.</p></div>`;
   const groups = [['Сегодня в плане', list.filter(k=>ids.has(k.id))], ['Ждут своей очереди', list.filter(k=>!ids.has(k.id))]];
@@ -393,7 +393,7 @@ function checkBadges(){
 function renderTrophies(){
   const done = S.tasks.filter(k=>k.doneAt).sort((a,b)=>b.doneAt.localeCompare(a.doneAt));
   const onTime = done.filter(k => diff(k.doneAt.slice(0,10), k.deadline) >= 0).length;
-  let h = `<header class="top"><div><div class="date-big disp">Трофеи</div><div class="date-sub">то, что уже сделано</div></div></header>`;
+  let h = `<header class="top"><div><div class="date-big disp">Трофеи</div><div class="date-sub">То, что уже сделано</div></div></header>`;
   h += `<div class="stats"><div class="stat"><b>${done.length}</b><span>выполнено</span></div><div class="stat"><b>${streak()}</b><span>${plural(streak(),'день','дня','дней')} подряд</span></div><div class="stat"><b>${done.length?Math.round(onTime/done.length*100):0}%</b><span>в срок</span></div></div>`;
   const defs = badgeDefs();
   h += `<div class="section-title"><span>Достижения</span><span>${defs.filter(b=>S.badges.includes(b.id)).length}/${defs.length}</span></div><div class="badges">`;
