@@ -80,6 +80,8 @@ header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:1
 .empty{background:var(--card);border-radius:var(--r);padding:26px 20px;text-align:center;box-shadow:var(--sh)}
 .empty .disp{font-size:18px;margin:8px 0 6px}
 .empty p{margin:0;color:var(--ink-2)}
+.empty.free{padding:34px 22px 30px;background:linear-gradient(180deg,#fff4dc,var(--card))}
+.empty.free .disp{font-size:20px;margin:12px 0 8px;line-height:1.25}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 18px;border-radius:14px;font-weight:700;background:var(--ink);color:var(--paper)}
 .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 .btn.warn{background:var(--fire);color:#fff}
@@ -400,10 +402,10 @@ function renderToday(){
   const now = new Date();
   const total = show.length + doneToday.length;
   let h = `<header class="top"><div><div class="date-big disp">${now.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</div><div class="date-sub">${(w=>w[0].toUpperCase()+w.slice(1))(now.toLocaleDateString('ru-RU',{weekday:'long'}))} · план на день</div></div>${ring(doneToday.length, total)}</header>` + strip();
-  if (!S.tasks.length){
-    h += `<div class="empty"><div style="font-size:34px">✍️</div><div class="disp">Задач пока нет</div><p>Нажмите «+», выберите куда, скажите задачу голосом и поставьте срок. Каждый день здесь будут до ${LIMIT} самых важных.</p></div>`;
+  if (!show.length && !doneToday.length){
+    h += `<div class="empty free"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="32" r="13" fill="#e9a23b"/><g stroke="#e9a23b" stroke-width="4" stroke-linecap="round"><path d="M32 6v7M32 51v7M6 32h7M51 32h7M13.6 13.6l5 5M45.4 45.4l5 5M13.6 50.4l5-5M45.4 18.6l5-5"/></g></svg><div class="disp">Сегодня у вас свободный день</div><p>Задач на сегодня нет. Отдыхайте или добавьте новую через «+».</p></div>`;
   } else if (!show.length){
-    h += `<div class="empty"><div style="font-size:38px">🏆</div><div class="disp">${doneToday.length ? 'День закрыт' : 'На сегодня пусто'}</div><p>${doneToday.length ? 'Все задачи на сегодня выполнены.' : 'Активных задач нет.'}${queue>0?' В очереди еще '+queue+'.':''}</p>${queue>0?'<div style="margin-top:14px"><button class="btn sm" data-act="more">Взять еще задачу</button></div>':''}</div>`;
+    h += `<div class="empty"><div style="font-size:38px">🏆</div><div class="disp">День закрыт</div><p>Все задачи на сегодня выполнены.${queue>0?' В очереди еще '+queue+'.':''}</p>${queue>0?'<div style="margin-top:14px"><button class="btn sm" data-act="more">Взять еще задачу</button></div>':''}</div>`;
   }
   if (show.length){
     h += `<div class="section-title"><span>В работе</span><span>${show.length}</span></div><div class="list">${show.map(k => taskHtml(k,{over:overIds.has(k.id)})).join('')}</div>`;
