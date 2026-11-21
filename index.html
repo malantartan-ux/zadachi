@@ -125,6 +125,7 @@ textarea{min-height:96px;resize:none;padding-right:64px}
 /* day strip */
 .strip{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 6px;padding:8px 16px 6px;scroll-snap-type:x proximity}
 .strip::-webkit-scrollbar{display:none}
+@media (min-width:500px){.strip{margin:0 0 6px;padding:8px 0 6px}}
 .strip button{flex:none;width:52px;padding:8px 0 9px;border-radius:16px;background:var(--card);box-shadow:var(--sh);display:flex;flex-direction:column;align-items:center;gap:2px;scroll-snap-align:start;position:relative}
 .strip button small{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase}
 .strip button b{font-family:Unbounded;font-size:17px}
@@ -372,7 +373,7 @@ function renderDay(ds){
   $('#v-today').innerHTML = h;
   scrollStrip();
 }
-function scrollStrip(){ const el = $('#strip .on'); if (el) el.parentNode.scrollLeft = el.offsetLeft - 16 - 52*2; }
+function scrollStrip(){ const st = $('#strip'), el = $('#strip .on') || $('#strip .td'); if (!st || !el) return; st.scrollLeft += el.getBoundingClientRect().left - st.getBoundingClientRect().left - 116; }
 function renderToday(){
   if (!viewDate) viewDate = today();
   if (viewDate !== today()) return renderDay(viewDate);
